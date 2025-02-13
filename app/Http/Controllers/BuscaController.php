@@ -3,62 +3,35 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Farmacia;
+use App\Models\Estoque;
+use App\Models\Medicamento;
 
 class BuscaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // Realizar busca de medicamentos
+    public function search(Request $request)
     {
-        //
-    }
+        $nomeMedicamento = $request->input('nome');
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $medicamentos = Medicamento::where('nome', 'like', '%' . $nomeMedicamento . '%')->get();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $resultados = [];
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        foreach ($medicamentos as $medicamento) {
+            $estoques = $medicamento->estoques()->with('farmacia')->get();
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+            foreach ($estoques as $estoque) {
+                if ($estoque->quantidade > 0) {
+                    $resultados[] = [
+                        'farmacia' => $estoque->farmacia,
+                        'medicamento' => $medicamento,
+                        'quantidade' => $estoque->quantidade,
+                    ];
+                }
+            }
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('busca.resultados', compact('resultados'));
     }
 }

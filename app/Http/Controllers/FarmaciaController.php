@@ -1,64 +1,75 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Farmacia;
 
 class FarmaciaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Listar todas as farmácias
     public function index()
     {
-        //
+        $farmacias = Farmacia::all();
+        return view('farmacias.index', compact('farmacias'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Exibir formulário para criar uma nova farmácia
     public function create()
     {
-        //
+        return view('farmacias.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Salvar uma nova farmácia
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'endereco' => 'required|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'telefone' => 'nullable|string',
+            'horario_funcionamento' => 'nullable|string',
+        ]);
+
+        Farmacia::create($validated);
+
+        return redirect()->route('farmacias.index')->with('success', 'Farmácia criada com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Exibir detalhes de uma farmácia
+    public function show(Farmacia $farmacia)
     {
-        //
+        return view('farmacias.show', compact('farmacia'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    // Exibir formulário para editar uma farmácia
+    public function edit(Farmacia $farmacia)
     {
-        //
+        return view('farmacias.edit', compact('farmacia'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Atualizar uma farmácia
+    public function update(Request $request, Farmacia $farmacia)
     {
-        //
+        $validated = $request->validate([
+            'nome' => 'required|string|max:255',
+            'endereco' => 'required|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+            'telefone' => 'nullable|string',
+            'horario_funcionamento' => 'nullable|string',
+        ]);
+
+        $farmacia->update($validated);
+
+        return redirect()->route('farmacias.index')->with('success', 'Farmácia atualizada com sucesso!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    // Excluir uma farmácia
+    public function destroy(Farmacia $farmacia)
     {
-        //
+        $farmacia->delete();
+
+        return redirect()->route('farmacias.index')->with('success', 'Farmácia excluída com sucesso!');
     }
 }
