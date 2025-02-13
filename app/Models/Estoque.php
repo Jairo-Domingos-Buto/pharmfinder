@@ -10,7 +10,7 @@ class Estoque extends Model
     protected $table = 'estoque';
 
     // Campos que podem ser preenchidos em massa
-    protected $fillable = ['farmacia_id', 'medicamento_id', 'quantidade'];
+    protected $fillable = ['farmacia_id', 'medicamento_id', 'quantidade', 'preco'];
 
     // Relação com a tabela farmacias
     public function farmacia()
